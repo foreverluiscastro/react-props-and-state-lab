@@ -15,6 +15,38 @@ class App extends React.Component {
     }
   }
 
+  updateFilterType = event => {
+    this.setState({
+      filters: {
+        type:  event.target.value
+      }
+    })
+  }
+
+  fetchListOfPets = () => {
+    let url =''
+    // console.log(this.state)
+    if (this.state.filters.type !== "all") {
+      const query = this.state.filters.type
+      url = `?type=${query}`
+    }
+    return fetch('/api/pets' + url)
+            .then(res => res.json())
+            .then(data => {
+              // console.log(data)
+              this.setState({
+                pets: data
+              })
+            }) 
+  }
+
+  handleAdopt = (id) => {
+    const pet = this.state.pets.find(pet => pet == id)
+    // I want to change the isAdopted value to true of a specified pet based on id
+    console.log(pet)
+  }
+
+
   render() {
     return (
       <div className="ui container">
@@ -24,10 +56,17 @@ class App extends React.Component {
         <div className="ui container">
           <div className="ui grid">
             <div className="four wide column">
-              <Filters />
+              <Filters 
+              
+              onChangeType={this.updateFilterType}
+              onFindPetsClick={this.fetchListOfPets}
+              />
             </div>
             <div className="twelve wide column">
-              <PetBrowser />
+              <PetBrowser
+              onAdoptPet={this.handleAdopt}
+              pets={this.state.pets}
+              />
             </div>
           </div>
         </div>
